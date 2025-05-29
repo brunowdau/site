@@ -6,29 +6,44 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body { font-family: 'Segoe UI', Arial, sans-serif; background: #f8f8fb; color: #222; }
-        .container { max-width: 980px; margin: 40px auto; background: #fff; border-radius: 18px; box-shadow: 0 4px 22px #0002; padding: 36px 22px; }
+        .container { max-width: 1080px; margin: 40px auto; background: #fff; border-radius: 18px; box-shadow: 0 4px 22px #0002; padding: 36px 22px; }
         h1 { font-size: 2rem; margin-bottom: 16px; color: #00538b; }
         .inputs, .param-table { display: flex; gap: 22px; flex-wrap: wrap; margin-bottom: 22px; align-items: flex-end;}
         .inputs label { display: flex; flex-direction: column; gap: 4px; font-weight: 500; }
-        .inputs input { padding: 8px; border: 1px solid #a0aec0; border-radius: 7px; width: 130px; font-size: 1rem; }
-        .param-table label { font-weight: 500; }
+        .inputs input, .param-table input { 
+            padding: 10px 8px;
+            border: 1px solid #a0aec0;
+            border-radius: 7px;
+            width: 130px;
+            font-size: 1rem;
+            height: 40px;
+            box-sizing: border-box;
+        }
+        .param-table input {
+            width: 70px;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+        .param-table label { 
+            font-weight: 500; 
+            align-items: center;
+        }
         table { width: 100%; border-collapse: collapse; margin-top: 20px;}
         th, td { border: 1px solid #dae4f0; padding: 7px 8px; text-align: center;}
         th { background: #f1f6fb; color: #00538b;}
         .saldo-neg { color: #cb3535; }
         .saldo-pos { color: #237b4a; }
-        .param-table input { width: 60px; }
-        @media (max-width: 700px) {
+        @media (max-width: 900px) {
             .container { padding: 8px; }
             .inputs, .param-table { flex-direction: column; gap: 12px; }
-            .inputs input { width: 100%; }
+            .inputs input, .param-table input { width: 100%; }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Simulador de Parcelamento - Fluxo de Caixa</h1>
-        <div style="margin-bottom:18px;">Simule o fluxo de recebimentos e pagamentos conforme o ciclo de vendas e compras do seu produto.</div>
+        <div style="margin-bottom:18px;">Simule o fluxo de recebimentos, pagamentos e estoque conforme o ciclo de vendas e compras do seu produto.</div>
         <div class="inputs">
             <label>Custo unitário do produto (R$)
                 <input type="number" id="custo" min="0" value="50">
@@ -41,6 +56,12 @@
             </label>
             <label>Nº de parcelas de pagamento
                 <input type="number" id="parcPag" min="1" value="1">
+            </label>
+            <label>Prazo médio de estocagem (em meses)
+                <input type="number" id="prazoEstoque" min="0" value="0">
+            </label>
+            <label>Saldo inicial (R$)
+                <input type="number" id="saldoInicial" min="-999999" value="0">
             </label>
             <label>Nº de meses para simular
                 <input type="number" id="numMeses" min="6" max="24" value="12">
@@ -80,10 +101,12 @@
             for (let i = 0; i < numMeses; i++) {
                 const label = document.createElement("label");
                 label.innerText = `M${i+1}:`;
+                label.style.display = "flex";
+                label.style.flexDirection = "column";
                 const inp = document.createElement("input");
                 inp.type = "number";
                 inp.min = "0";
-                inp.value = i === 0 ? 1 : (i === 1 ? 2 : 0); // Default: 1 na primeira, 2 na segunda, resto zero
+                inp.value = i === 0 ? 1 : (i === 1 ? 2 : 0);
                 inp.addEventListener("input", atualizarTabela);
                 qtdeVendidaInputs.push(inp);
                 label.appendChild(inp);
@@ -96,14 +119,16 @@
             const venda = parseFloat(document.getElementById('venda').value) || 0;
             const parcReceb = parseInt(document.getElementById('parcReceb').value) || 1;
             const parcPag = parseInt(document.getElementById('parcPag').value) || 1;
+            const prazoEstoque = parseInt(document.getElementById('prazoEstoque').value) || 0;
+            const saldoInicial = parseFloat(document.getElementById('saldoInicial').value) || 0;
             const numMeses = parseInt(numMesesInput.value);
 
             // Captura qtde vendida por mês
             let qtdeVendida = qtdeVendidaInputs.map(inp => parseInt(inp.value) || 0);
 
             // Arrays para registrar valores de cada mês
-            let receberPorMes = Array(numMeses + parcReceb).fill(0);
-            let pagarPorMes = Array(numMeses + parcPag).fill(0);
+            let receberPorMes = Array(numMeses + parcReceb + prazoEstoque).fill(0);
+            let pagarPorMes = Array(numMeses + parcPag + prazoEstoque).fill(0);
 
             // Calcular recebimentos e pagamentos por parcela
             for (let mes = 0; mes < numMeses; mes++) {
@@ -115,14 +140,14 @@
                 for (let p = 0; p < parcReceb; p++) {
                     receberPorMes[mes + p] += valorVenda / parcReceb;
                 }
-                // Distribui pagamentos nas parcelas seguintes
+                // Distribui pagamentos nas parcelas seguintes, considerando o prazo de estocagem
                 for (let p = 0; p < parcPag; p++) {
-                    pagarPorMes[mes + p] += valorCusto / parcPag;
+                    pagarPorMes[mes + prazoEstoque + p] += valorCusto / parcPag;
                 }
             }
 
             // Monta tabela
-            let saldoAcum = 0;
+            let saldoAcum = saldoInicial;
             let tbody = "";
             for (let mes = 0; mes < numMeses; mes++) {
                 const qtde = qtdeVendida[mes];

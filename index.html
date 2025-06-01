@@ -2,15 +2,15 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Simulador de Parcelamento de Recebíveis e Pagamentos | Lean Company</title>
+    <title>Simulador de Capital de Giro | Lean Company</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body { font-family: 'Segoe UI', Arial, sans-serif; background: #f8f8fb; color: #222; }
         .container { max-width: 1080px; margin: 40px auto; background: #fff; border-radius: 18px; box-shadow: 0 4px 22px #0002; padding: 36px 22px; }
         h1 { font-size: 2rem; margin-bottom: 16px; color: #00538b; }
-        .inputs, .param-table { display: flex; gap: 22px; flex-wrap: wrap; margin-bottom: 22px; align-items: flex-end;}
+        .inputs { display: flex; gap: 22px; flex-wrap: wrap; margin-bottom: 22px; align-items: flex-end;}
         .inputs label { display: flex; flex-direction: column; gap: 4px; font-weight: 500; }
-        .inputs input, .param-table input { 
+        .inputs input { 
             padding: 10px 8px;
             border: 1px solid #a0aec0;
             border-radius: 7px;
@@ -19,31 +19,57 @@
             height: 40px;
             box-sizing: border-box;
         }
-        .param-table input {
-            width: 70px;
-            margin-bottom: 8px;
-            text-align: center;
+        .info-top {
+            margin-bottom: 18px;
+            display: flex;
+            gap: 40px;
+            align-items: flex-end;
+            flex-wrap: wrap;
         }
-        .param-table label { 
-            font-weight: 500; 
-            align-items: center;
+        .info-top .info-box {
+            background: #f1f6fb;
+            border-radius: 9px;
+            padding: 12px 20px;
+            min-width: 260px;
+            font-size: 1.1rem;
+            color: #114e74;
+            border-left: 6px solid #0377b0;
         }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px;}
+        .info-top .info-box .big {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #11853b;
+        }
+        .info-top .info-box .neg {
+            color: #cb3535;
+        }
+        table { width: 100%; border-collapse: collapse; margin-top: 16px;}
         th, td { border: 1px solid #dae4f0; padding: 7px 8px; text-align: center;}
         th { background: #f1f6fb; color: #00538b;}
         .saldo-neg { color: #cb3535; }
         .saldo-pos { color: #237b4a; }
+        .editable-cell input {
+            width: 70px;
+            font-size: 1.05em;
+            padding: 7px 4px;
+            border: 1.2px solid #7ca6c7;
+            border-radius: 6px;
+            text-align: center;
+            height: 36px;
+            box-sizing: border-box;
+        }
         @media (max-width: 900px) {
             .container { padding: 8px; }
-            .inputs, .param-table { flex-direction: column; gap: 12px; }
-            .inputs input, .param-table input { width: 100%; }
+            .inputs { flex-direction: column; gap: 12px; }
+            .inputs input { width: 100%; }
+            .info-top { flex-direction: column; gap: 14px; }
+            .info-top .info-box { min-width: 0; width: 100%;}
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Simulador de Parcelamento - Fluxo de Caixa</h1>
-        <div style="margin-bottom:18px;">Simule o fluxo de recebimentos, pagamentos e estoque conforme o ciclo de vendas e compras do seu produto.</div>
+        <h1>Simulador de Capital de Giro - Lean Company</h1>
         <div class="inputs">
             <label>Custo unitário do produto (R$)
                 <input type="number" id="custo" min="0" value="50">
@@ -57,22 +83,30 @@
             <label>Nº de parcelas de pagamento
                 <input type="number" id="parcPag" min="1" value="1">
             </label>
-            <label>Prazo médio de estocagem (em meses)
-                <input type="number" id="prazoEstoque" min="0" value="0">
-            </label>
             <label>Saldo inicial (R$)
                 <input type="number" id="saldoInicial" min="-999999" value="0">
+            </label>
+            <label>Qtd. de itens em estoque inicial
+                <input type="number" id="estoqueInicial" min="0" value="0">
             </label>
             <label>Nº de meses para simular
                 <input type="number" id="numMeses" min="6" max="24" value="12">
             </label>
         </div>
-
-        <div>
-            <b>Informe a quantidade vendida por mês:</b>
-            <div class="param-table" id="qtdeTable"></div>
+        <div class="info-top">
+            <div class="info-box">
+                <div>Necessidade de Capital de Giro da Operação</div>
+                <span class="big neg" id="capitalGiro"></span>
+            </div>
+            <div class="info-box">
+                <div>Valor investido no estoque inicial</div>
+                <span class="big" id="valorEstoque"></span>
+            </div>
+            <div class="info-box">
+                <div>Necessidade total de Capital de Giro <br><span style="font-size:0.9em;">(operação + estoque inicial)</span></div>
+                <span class="big neg" id="capitalTotal"></span>
+            </div>
         </div>
-
         <table id="resultTable">
             <thead>
                 <tr>
@@ -87,78 +121,71 @@
             <tbody></tbody>
         </table>
     </div>
-
     <script>
-        // Inicializadores
-        const numMesesInput = document.getElementById('numMeses');
-        const qtdeTable = document.getElementById('qtdeTable');
-        let qtdeVendidaInputs = [];
+        // Dados e variáveis principais
+        let qtdeVendida = [];
+        let numMeses = 12;
 
-        function gerarQtdeInputs() {
-            const numMeses = parseInt(numMesesInput.value);
-            qtdeTable.innerHTML = "";
-            qtdeVendidaInputs = [];
-            for (let i = 0; i < numMeses; i++) {
-                const label = document.createElement("label");
-                label.innerText = `M${i+1}:`;
-                label.style.display = "flex";
-                label.style.flexDirection = "column";
-                const inp = document.createElement("input");
-                inp.type = "number";
-                inp.min = "0";
-                inp.value = i === 0 ? 1 : (i === 1 ? 2 : 0);
-                inp.addEventListener("input", atualizarTabela);
-                qtdeVendidaInputs.push(inp);
-                label.appendChild(inp);
-                qtdeTable.appendChild(label);
-            }
+        function getParams() {
+            return {
+                custo: parseFloat(document.getElementById('custo').value) || 0,
+                venda: parseFloat(document.getElementById('venda').value) || 0,
+                parcReceb: parseInt(document.getElementById('parcReceb').value) || 1,
+                parcPag: parseInt(document.getElementById('parcPag').value) || 1,
+                saldoInicial: parseFloat(document.getElementById('saldoInicial').value) || 0,
+                estoqueInicial: parseInt(document.getElementById('estoqueInicial').value) || 0,
+                numMeses: parseInt(document.getElementById('numMeses').value) || 12
+            };
         }
 
-        function atualizarTabela() {
-            const custo = parseFloat(document.getElementById('custo').value) || 0;
-            const venda = parseFloat(document.getElementById('venda').value) || 0;
-            const parcReceb = parseInt(document.getElementById('parcReceb').value) || 1;
-            const parcPag = parseInt(document.getElementById('parcPag').value) || 1;
-            const prazoEstoque = parseInt(document.getElementById('prazoEstoque').value) || 0;
-            const saldoInicial = parseFloat(document.getElementById('saldoInicial').value) || 0;
-            const numMeses = parseInt(numMesesInput.value);
-
-            // Captura qtde vendida por mês
-            let qtdeVendida = qtdeVendidaInputs.map(inp => parseInt(inp.value) || 0);
+        function gerarTabela() {
+            const params = getParams();
+            numMeses = params.numMeses;
+            // Se qtdeVendida tiver menos meses, completa; se tiver mais, corta
+            while (qtdeVendida.length < numMeses) qtdeVendida.push(0);
+            while (qtdeVendida.length > numMeses) qtdeVendida.pop();
 
             // Arrays para registrar valores de cada mês
-            let receberPorMes = Array(numMeses + parcReceb + prazoEstoque).fill(0);
-            let pagarPorMes = Array(numMeses + parcPag + prazoEstoque).fill(0);
+            let receberPorMes = Array(numMeses + params.parcReceb).fill(0);
+            let pagarPorMes = Array(numMeses + params.parcPag).fill(0);
 
             // Calcular recebimentos e pagamentos por parcela
             for (let mes = 0; mes < numMeses; mes++) {
-                const qtd = qtdeVendida[mes];
-                const valorVenda = qtd * venda;
-                const valorCusto = qtd * custo;
+                const qtd = qtdeVendida[mes] || 0;
+                const valorVenda = qtd * params.venda;
+                const valorCusto = qtd * params.custo;
 
                 // Distribui recebimentos nas parcelas seguintes
-                for (let p = 0; p < parcReceb; p++) {
-                    receberPorMes[mes + p] += valorVenda / parcReceb;
+                for (let p = 0; p < params.parcReceb; p++) {
+                    receberPorMes[mes + p] += valorVenda / params.parcReceb;
                 }
-                // Distribui pagamentos nas parcelas seguintes, considerando o prazo de estocagem
-                for (let p = 0; p < parcPag; p++) {
-                    pagarPorMes[mes + prazoEstoque + p] += valorCusto / parcPag;
+                // Distribui pagamentos nas parcelas seguintes
+                for (let p = 0; p < params.parcPag; p++) {
+                    pagarPorMes[mes + p] += valorCusto / params.parcPag;
                 }
             }
 
-            // Monta tabela
-            let saldoAcum = saldoInicial;
+            // Monta tabela e calcula saldos
+            let saldoAcum = params.saldoInicial;
+            let saldoMin = saldoAcum;
             let tbody = "";
+
             for (let mes = 0; mes < numMeses; mes++) {
-                const qtde = qtdeVendida[mes];
+                // HTML input editável na tabela
+                const input = `<input type="number" min="0" value="${qtdeVendida[mes] || 0}" 
+                    onchange="qtdeVendida[${mes}]=parseInt(this.value)||0; gerarTabela();">`;
+
+                const qtde = qtdeVendida[mes] || 0;
                 const receber = receberPorMes[mes] || 0;
                 const pagar = pagarPorMes[mes] || 0;
                 const saldo = receber - pagar;
                 saldoAcum += saldo;
 
+                if (saldoAcum < saldoMin) saldoMin = saldoAcum;
+
                 tbody += `<tr>
                     <td>${mes+1}</td>
-                    <td>${qtde}</td>
+                    <td class="editable-cell">${input}</td>
                     <td>R$ ${receber.toFixed(2)}</td>
                     <td class="${pagar > 0 ? 'saldo-neg' : ''}">${pagar > 0 ? '-R$ ' + pagar.toFixed(2) : '-'}</td>
                     <td class="${saldo < 0 ? 'saldo-neg' : (saldo > 0 ? 'saldo-pos' : '')}">
@@ -170,22 +197,40 @@
                 </tr>`;
             }
             document.querySelector("#resultTable tbody").innerHTML = tbody;
+
+            // Exibe capital de giro e valor de estoque
+            let capitalGiro = saldoMin < 0 ? Math.abs(saldoMin) : 0;
+            let valorEstoque = params.estoqueInicial * params.custo;
+            let capitalTotal = capitalGiro + valorEstoque;
+
+            document.getElementById('capitalGiro').innerHTML = `R$ ${capitalGiro.toLocaleString('pt-BR', {minimumFractionDigits:2})}`;
+            document.getElementById('valorEstoque').innerHTML = `R$ ${valorEstoque.toLocaleString('pt-BR', {minimumFractionDigits:2})}`;
+            document.getElementById('capitalTotal').innerHTML = `R$ ${capitalTotal.toLocaleString('pt-BR', {minimumFractionDigits:2})}`;
         }
 
-        // Listeners gerais
+        // Atualiza tabela ao mexer nos inputs principais
         document.querySelectorAll('.inputs input').forEach(inp => inp.addEventListener('input', () => {
-            gerarQtdeInputs();
-            atualizarTabela();
+            // Ao mudar o número de meses, ajusta array de quantidades vendidas
+            if(inp.id === 'numMeses') {
+                const params = getParams();
+                while (qtdeVendida.length < params.numMeses) qtdeVendida.push(0);
+                while (qtdeVendida.length > params.numMeses) qtdeVendida.pop();
+            }
+            gerarTabela();
         }));
 
-        numMesesInput.addEventListener('input', () => {
-            gerarQtdeInputs();
-            atualizarTabela();
-        });
-
         // Inicialização
-        gerarQtdeInputs();
-        atualizarTabela();
+        function init() {
+            const params = getParams();
+            qtdeVendida = [];
+            for(let i=0; i<params.numMeses; i++) qtdeVendida.push(i === 0 ? 1 : (i === 1 ? 2 : 0));
+            gerarTabela();
+        }
+
+        window.onload = init;
+        // Torna qtdeVendida global para onchange funcionar
+        window.qtdeVendida = qtdeVendida;
+        window.gerarTabela = gerarTabela;
     </script>
 </body>
 </html>

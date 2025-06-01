@@ -5,65 +5,132 @@
     <title>Simulador de Capital de Giro | Lean Company</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f8f8fb; color: #222; }
-        .container { max-width: 1080px; margin: 40px auto; background: #fff; border-radius: 18px; box-shadow: 0 4px 22px #0002; padding: 36px 22px; }
-        h1 { font-size: 2rem; margin-bottom: 16px; color: #00538b; }
-        .inputs { display: flex; gap: 22px; flex-wrap: wrap; margin-bottom: 22px; align-items: flex-end;}
-        .inputs label { display: flex; flex-direction: column; gap: 4px; font-weight: 500; }
+        body { 
+            font-family: 'Segoe UI', Arial, sans-serif; 
+            background: #f8f8fb; 
+            color: #222; 
+        }
+        .container { 
+            max-width: 1260px; 
+            margin: 30px auto; 
+            background: #fff; 
+            border-radius: 18px; 
+            box-shadow: 0 4px 22px #0002; 
+            padding: 32px 38px;
+        }
+        h1 { 
+            font-size: 2.3rem; 
+            margin-bottom: 26px; 
+            color: #015386; 
+            font-weight: bold; 
+            letter-spacing: 0.01em;
+        }
+        .inputs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 26px 34px;
+            margin-bottom: 26px;
+        }
+        .inputs label {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            font-weight: 500;
+            min-width: 170px;
+        }
         .inputs input { 
             padding: 10px 8px;
             border: 1px solid #a0aec0;
             border-radius: 7px;
-            width: 130px;
+            width: 100%;
             font-size: 1rem;
-            height: 40px;
+            height: 42px;
             box-sizing: border-box;
+            margin-top: 3px;
         }
-        .info-top {
-            margin-bottom: 18px;
+        .cards-row {
             display: flex;
-            gap: 40px;
-            align-items: flex-end;
             flex-wrap: wrap;
+            gap: 22px;
+            margin-bottom: 32px;
+            justify-content: flex-start;
+            align-items: flex-end;
         }
-        .info-top .info-box {
+        .info-box {
             background: #f1f6fb;
-            border-radius: 9px;
-            padding: 12px 20px;
-            min-width: 260px;
+            border-radius: 10px;
+            padding: 14px 20px 10px 20px;
+            min-width: 270px;
+            flex: 1 1 270px;
             font-size: 1.1rem;
-            color: #114e74;
             border-left: 6px solid #0377b0;
+            box-shadow: 0 1px 6px #cfe9fd40;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            height: 76px;
         }
-        .info-top .info-box .big {
-            font-size: 1.5em;
+        .info-box .big {
+            font-size: 1.6em;
             font-weight: bold;
-            color: #11853b;
-        }
-        .info-top .info-box .neg {
             color: #cb3535;
+            margin-top: 2px;
         }
-        table { width: 100%; border-collapse: collapse; margin-top: 16px;}
-        th, td { border: 1px solid #dae4f0; padding: 7px 8px; text-align: center;}
-        th { background: #f1f6fb; color: #00538b;}
+        .info-box .pos { color: #11853b; }
+        .info-box .neg { color: #cb3535; }
+        .info-box .neutral { color: #015386; }
+        .info-box .label {
+            font-size: 1em;
+            margin-bottom: 3px;
+            color: #015386;
+            font-weight: 500;
+        }
+        .info-box:last-child {
+            min-width: 310px;
+        }
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin-top: 10px;
+        }
+        th, td { 
+            border: 1px solid #dae4f0; 
+            padding: 8px 4px; 
+            text-align: center;
+        }
+        th { 
+            background: #f1f6fb; 
+            color: #015386;
+            font-size: 1.05rem;
+        }
         .saldo-neg { color: #cb3535; }
         .saldo-pos { color: #237b4a; }
         .editable-cell input {
             width: 70px;
-            font-size: 1.05em;
-            padding: 7px 4px;
+            font-size: 1.07em;
+            padding: 8px 4px;
             border: 1.2px solid #7ca6c7;
             border-radius: 6px;
             text-align: center;
             height: 36px;
             box-sizing: border-box;
+            background: #f7faff;
+        }
+        /* Ajuste para colunas dos valores iguais */
+        .val-col {
+            width: 140px;
+            min-width: 120px;
+            max-width: 160px;
+        }
+        @media (max-width: 1300px) {
+            .container { padding: 14px; }
+            .cards-row { flex-direction: column; gap: 15px; }
+            .info-box { width: 100%; min-width: 0; }
         }
         @media (max-width: 900px) {
-            .container { padding: 8px; }
             .inputs { flex-direction: column; gap: 12px; }
-            .inputs input { width: 100%; }
-            .info-top { flex-direction: column; gap: 14px; }
-            .info-top .info-box { min-width: 0; width: 100%;}
+            .inputs label { min-width: 0; width: 100%; }
+            .info-box { width: 100%; }
         }
     </style>
 </head>
@@ -93,17 +160,17 @@
                 <input type="number" id="numMeses" min="6" max="24" value="12">
             </label>
         </div>
-        <div class="info-top">
+        <div class="cards-row">
             <div class="info-box">
-                <div>Necessidade de Capital de Giro da Operação</div>
+                <span class="label">Necessidade de Capital de Giro da Operação</span>
                 <span class="big neg" id="capitalGiro"></span>
             </div>
             <div class="info-box">
-                <div>Valor investido no estoque inicial</div>
-                <span class="big" id="valorEstoque"></span>
+                <span class="label">Valor investido no estoque inicial</span>
+                <span class="big neg" id="valorEstoque"></span>
             </div>
             <div class="info-box">
-                <div>Necessidade total de Capital de Giro <br><span style="font-size:0.9em;">(operação + estoque inicial)</span></div>
+                <span class="label">NCG - (Operação + Estoque)</span>
                 <span class="big neg" id="capitalTotal"></span>
             </div>
         </div>
@@ -112,10 +179,10 @@
                 <tr>
                     <th>Mês</th>
                     <th>Qtde Vendida</th>
-                    <th>Valor Receber (R$)</th>
-                    <th>Valor Pagar (R$)</th>
-                    <th>Saldo (R$)</th>
-                    <th>Saldo Acumulado (R$)</th>
+                    <th class="val-col">Valor Receber (R$)</th>
+                    <th class="val-col">Valor Pagar (R$)</th>
+                    <th class="val-col">Saldo (R$)</th>
+                    <th class="val-col">Saldo Acumulado (R$)</th>
                 </tr>
             </thead>
             <tbody></tbody>
@@ -186,12 +253,12 @@
                 tbody += `<tr>
                     <td>${mes+1}</td>
                     <td class="editable-cell">${input}</td>
-                    <td>R$ ${receber.toFixed(2)}</td>
-                    <td class="${pagar > 0 ? 'saldo-neg' : ''}">${pagar > 0 ? '-R$ ' + pagar.toFixed(2) : '-'}</td>
-                    <td class="${saldo < 0 ? 'saldo-neg' : (saldo > 0 ? 'saldo-pos' : '')}">
+                    <td class="val-col">R$ ${receber.toFixed(2)}</td>
+                    <td class="val-col ${pagar > 0 ? 'saldo-neg' : ''}">${pagar > 0 ? '-R$ ' + pagar.toFixed(2) : '-'}</td>
+                    <td class="val-col ${saldo < 0 ? 'saldo-neg' : (saldo > 0 ? 'saldo-pos' : '')}">
                         ${saldo > 0 ? 'R$ ' : (saldo < 0 ? '-R$ ' : '')}${Math.abs(saldo).toFixed(2)}
                     </td>
-                    <td class="${saldoAcum < 0 ? 'saldo-neg' : (saldoAcum > 0 ? 'saldo-pos' : '')}">
+                    <td class="val-col ${saldoAcum < 0 ? 'saldo-neg' : (saldoAcum > 0 ? 'saldo-pos' : '')}">
                         ${saldoAcum > 0 ? 'R$ ' : (saldoAcum < 0 ? '-R$ ' : '')}${Math.abs(saldoAcum).toFixed(2)}
                     </td>
                 </tr>`;

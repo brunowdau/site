@@ -4,47 +4,70 @@
     <meta charset="UTF-8">
     <title>Simulador de Capital de Giro | Lean Company</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Font Awesome para ícones -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
+        :root {
+            --lean-blue: #355981;
+            --lean-blue-dark: #223850;
+            --lean-green: #10ac5f;
+            --lean-light: #f1f6fb;
+            --lean-bg: #f8f8fb;
+            --lean-red: #cb3535;
+            --lean-white: #fff;
+        }
         body {
             font-family: 'Segoe UI', Arial, sans-serif;
-            background: #f8f8fb;
-            color: #222;
+            background: var(--lean-bg);
+            color: var(--lean-blue-dark);
         }
         .container {
             max-width: 1100px;
             margin: 30px auto;
-            background: #fff;
+            background: var(--lean-white);
             border-radius: 18px;
             box-shadow: 0 4px 22px #0002;
-            padding: 32px 38px;
+            padding: 28px 38px 38px 38px;
+        }
+        .logo {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 18px;
+        }
+        .logo img {
+            height: 76px;
+            width: auto;
+            max-width: 240px;
         }
         h1 {
-            font-size: 2.2rem;
+            font-size: 2.1rem;
             margin-bottom: 10px;
-            color: #015386;
+            color: var(--lean-blue);
             font-weight: bold;
             text-align: center;
+            letter-spacing: 0.5px;
         }
         .subtitle {
             font-size: 1.09rem;
-            margin-bottom: 24px;
-            color: #215f86;
+            margin-bottom: 20px;
+            color: var(--lean-blue);
             background: #e8f2fa;
             border-radius: 8px;
             padding: 11px 16px;
             text-align: center;
         }
         .inputs-card {
-            background: #f1f6fb;
+            background: var(--lean-light);
             border-radius: 14px;
-            padding: 18px 26px 8px 26px;
+            padding: 18px 22px 12px 22px;
             margin-bottom: 20px;
             box-shadow: 0 2px 10px #cde8fd30;
             display: flex;
             flex-wrap: wrap;
-            gap: 16px 18px;
+            gap: 18px 18px;
             justify-content: flex-start;
             align-items: flex-end;
         }
@@ -53,19 +76,19 @@
             flex-direction: column;
             gap: 4px;
             font-weight: 500;
-            min-width: 138px;
-            max-width: 160px;
-            flex: 1 1 138px;
+            min-width: 128px;
+            max-width: 140px;
+            flex: 1 1 128px;
             position: relative;
             font-size: 1.01em;
         }
         .inputs-card input {
-            padding: 8px 8px;
+            padding: 7px 7px;
             border: 1px solid #a0aec0;
             border-radius: 7px;
             width: 100%;
             font-size: 1rem;
-            height: 36px;
+            height: 34px;
             box-sizing: border-box;
             margin-top: 3px;
             background: #fff;
@@ -75,13 +98,13 @@
             right: 2px;
             top: 0;
             cursor: pointer;
-            color: #3276c3;
+            color: var(--lean-blue);
             font-size: 1.08em;
         }
         .inputs-card .tooltip .tooltip-text {
             visibility: hidden;
-            width: 190px;
-            background-color: #3276c3;
+            width: 180px;
+            background-color: var(--lean-blue);
             color: #fff;
             text-align: left;
             border-radius: 7px;
@@ -90,7 +113,7 @@
             z-index: 20;
             top: 24px;
             right: 2px;
-            font-size: 0.95em;
+            font-size: 0.94em;
             opacity: 0;
             transition: opacity 0.18s;
             font-weight: 400;
@@ -103,102 +126,110 @@
         .cards-row {
             display: flex;
             flex-wrap: wrap;
-            gap: 22px;
+            gap: 18px;
             margin-bottom: 32px;
             justify-content: flex-start;
             align-items: flex-end;
         }
         .info-box {
-            background: #f1f6fb;
+            background: var(--lean-blue);
             border-radius: 10px;
-            padding: 14px 20px 10px 20px;
-            min-width: 270px;
-            flex: 1 1 270px;
+            padding: 15px 20px 11px 20px;
+            min-width: 238px;
+            flex: 1 1 238px;
             font-size: 1.07rem;
-            border-left: 6px solid #0377b0;
+            border-left: 6px solid var(--lean-green);
             box-shadow: 0 1px 6px #cfe9fd40;
             display: flex;
             flex-direction: column;
             align-items: flex-start;
-            height: 80px;
+            height: 78px;
             position: relative;
         }
         .info-box .label {
             font-size: 1em;
             margin-bottom: 2px;
-            color: #015386;
+            color: var(--lean-white);
             font-weight: 500;
             display: flex;
             align-items: center;
             gap: 7px;
         }
         .info-box i {
-            color: #0174b7;
-            font-size: 1.1em;
+            color: #bfe6ff;
+            font-size: 1.09em;
         }
         .info-box .tooltip-text {
             position: absolute;
             top: 30px;
             left: 25px;
             z-index: 20;
-            background: #3276c3;
+            background: var(--lean-blue);
             color: #fff;
             padding: 8px 16px;
             border-radius: 7px;
-            font-size: 0.96em;
+            font-size: 0.97em;
             visibility: hidden;
             opacity: 0;
             transition: opacity 0.16s;
-            width: 220px;
+            width: 210px;
         }
         .info-box:hover .tooltip-text { visibility: visible; opacity: 1; }
         .info-box .big {
-            font-size: 1.5em;
+            font-size: 1.36em;
             font-weight: bold;
-            color: #cb3535;
+            color: var(--lean-white);
             margin-top: 2px;
         }
-        .info-box .pos { color: #11853b; }
-        .info-box .neg { color: #cb3535; }
-        .info-box .neutral { color: #015386; }
+        .info-box .pos { color: #45ea9e; }
+        .info-box .neg { color: #ffd6d6; }
+        .info-box .neutral { color: #aad7fa; }
         .info-box:last-child {
-            min-width: 310px;
+            min-width: 238px;
         }
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 12px;
+            margin-top: 14px;
+            background: var(--lean-white);
+            border-radius: 12px;
+            overflow: hidden;
         }
         th, td {
             border: 1px solid #dae4f0;
-            padding: 10px 8px;
-            text-align: right;
-            font-size: 1.11em;
+            padding: 9px 7px;
+            font-size: 1.10em;
         }
         th {
-            background: #f1f6fb;
-            color: #015386;
-            font-size: 1.08em;
+            background: var(--lean-light);
+            color: var(--lean-blue);
+            font-size: 1.09em;
             text-align: center;
         }
-        .wide-col {
-            width: 150px;
-            min-width: 120px;
-            max-width: 170px;
+        td {
+            background: var(--lean-white);
         }
-        .saldo-neg { color: #cb3535; }
-        .saldo-pos { color: #237b4a; }
-        .saldo-zebra { background: #f7fbff; }
+        .wide-col {
+            width: 140px;
+            min-width: 90px;
+            max-width: 160px;
+        }
+        .saldo-neg { color: var(--lean-red); }
+        .saldo-pos { color: var(--lean-green); }
+        .saldo-zebra { background: #f3f7fb; }
+        .center { text-align: center !important; }
         .editable-cell input {
-            width: 120px;   /* Dobrei a largura aqui */
+            width: 108px;   /* Mantido largo */
             font-size: 1.08em;
-            padding: 7px 6px;
+            padding: 7px 8px;
             border: 1.2px solid #7ca6c7;
             border-radius: 6px;
             text-align: center;
-            height: 32px;
+            height: 31px;
             box-sizing: border-box;
             background: #f7faff;
+            margin: 0 auto;
+            display: block;
         }
         .legend {
             margin-top: 10px;
@@ -214,33 +245,48 @@
             border-radius: 4px;
             margin-right: 7px;
         }
-        .legend .neg { background: #fce0e0; border: 1px solid #cb3535;}
-        .legend .pos { background: #e0faea; border: 1px solid #10ac5f;}
+        .legend .neg { background: #fce0e0; border: 1px solid var(--lean-red);}
+        .legend .pos { background: #e0faea; border: 1px solid var(--lean-green);}
         .legend .zebra { background: #f7fbff; border: 1px solid #a7c7e7;}
         .insights {
-            background: #f1f6fb;
+            background: #e8f2fa;
             border-radius: 10px;
-            margin-top: 15px;
-            padding: 12px 18px;
-            color: #01637c;
+            margin-top: 16px;
+            padding: 13px 18px;
+            color: var(--lean-blue-dark);
             font-size: 1.09em;
             font-weight: 500;
-            border-left: 5px solid #10ac5f;
+            border-left: 5px solid var(--lean-green);
         }
-        @media (max-width: 1200px) {
-            .container { padding: 8px; }
-            .cards-row { flex-direction: column; gap: 15px; }
-            .info-box { width: 100%; min-width: 0; }
-            .inputs-card { flex-direction: column; gap: 10px;}
+        .chart-container {
+            margin-top: 32px;
+            background: var(--lean-white);
+            border-radius: 14px;
+            padding: 22px 16px 10px 16px;
+            box-shadow: 0 1px 4px #b8c6df1a;
+        }
+        .chart-title {
+            font-size: 1.13em;
+            color: var(--lean-blue);
+            margin-bottom: 2px;
+            font-weight: 600;
+            text-align: center;
+        }
+        @media (max-width: 1100px) {
+            .container { padding: 5px; }
         }
         @media (max-width: 900px) {
             .inputs-card { flex-direction: column; }
-            .info-box { width: 100%; }
+            .cards-row { flex-direction: column; }
         }
     </style>
 </head>
 <body>
     <div class="container">
+        <!-- LOGO LEAN COMPANY -->
+        <div class="logo">
+            <img src="logo.png" alt="LeanCo Soluções em Gestão" />
+        </div>
         <h1>Simulador de Capital de Giro - Lean Company</h1>
         <div class="subtitle">
             Capital de giro (NCG) é o valor que sua empresa precisa para cobrir o ciclo entre pagar fornecedores e receber dos clientes.<br>
@@ -248,7 +294,7 @@
         </div>
         <div class="inputs-card">
             <label>
-                Custo unitário do produto (R$)
+                Custo unitário do produto
                 <span class="tooltip">
                     <i class="fa-solid fa-circle-info"></i>
                     <span class="tooltip-text">Quanto custa para adquirir ou fabricar cada unidade.</span>
@@ -256,7 +302,7 @@
                 <input type="number" id="custo" min="0" value="50" placeholder="Ex: 50,00">
             </label>
             <label>
-                Valor de venda unitário (R$)
+                Valor de venda unitário
                 <span class="tooltip">
                     <i class="fa-solid fa-circle-info"></i>
                     <span class="tooltip-text">Preço cobrado ao cliente em cada unidade.</span>
@@ -280,7 +326,7 @@
                 <input type="number" id="parcPag" min="1" value="1" placeholder="Ex: 1">
             </label>
             <label>
-                Saldo inicial (R$)
+                Saldo inicial
                 <span class="tooltip">
                     <i class="fa-solid fa-circle-info"></i>
                     <span class="tooltip-text">Quanto você tem em caixa ao iniciar a simulação.</span>
@@ -314,7 +360,7 @@
                         <span class="tooltip-text">Necessidade de capital de giro sem considerar estoque inicial.</span>
                     </span>
                 </span>
-                <span class="big neg" id="capitalGiro"></span>
+                <span class="big" id="capitalGiro"></span>
             </div>
             <div class="info-box">
                 <span class="label">
@@ -325,7 +371,7 @@
                         <span class="tooltip-text">Valor investido no estoque inicial (qtde × custo unitário).</span>
                     </span>
                 </span>
-                <span class="big neg" id="valorEstoque"></span>
+                <span class="big" id="valorEstoque"></span>
             </div>
             <div class="info-box">
                 <span class="label">
@@ -336,18 +382,18 @@
                         <span class="tooltip-text">Necessidade total de capital de giro (operação + estoque inicial).</span>
                     </span>
                 </span>
-                <span class="big neg" id="capitalTotal"></span>
+                <span class="big" id="capitalTotal"></span>
             </div>
         </div>
         <table id="resultTable">
             <thead>
                 <tr>
-                    <th class="wide-col">Mês</th>
-                    <th class="wide-col">Qtde Vendida</th>
-                    <th class="wide-col">Valor Receber (R$)</th>
-                    <th class="wide-col">Valor Pagar (R$)</th>
-                    <th class="wide-col">Saldo Mês (R$)</th>
-                    <th class="wide-col">Saldo Acumulado (R$)</th>
+                    <th class="wide-col center">Mês</th>
+                    <th class="wide-col center">Qtde Vendida</th>
+                    <th class="wide-col">Valor Receber</th>
+                    <th class="wide-col">Valor Pagar</th>
+                    <th class="wide-col">Saldo Mês</th>
+                    <th class="wide-col">Saldo Acumulado</th>
                 </tr>
             </thead>
             <tbody></tbody>
@@ -357,11 +403,17 @@
             <span class="pos"></span>Saldo positivo
             <span class="zebra"></span>Linha alternada
         </div>
+        <div class="chart-container">
+            <div class="chart-title">Evolução do Saldo Acumulado (R$)</div>
+            <canvas id="saldoChart" height="90"></canvas>
+        </div>
         <div class="insights" id="insights"></div>
     </div>
     <script>
         let qtdeVendida = [];
         let numMeses = 12;
+        let saldoAcumuladoArray = [];
+        let saldoChart = null;
 
         function getParams() {
             return {
@@ -399,11 +451,12 @@
             let saldoAcum = params.saldoInicial;
             let saldoMin = saldoAcum;
             let tbody = "";
+            saldoAcumuladoArray = [];
 
             for (let mes = 0; mes < numMeses; mes++) {
                 const zebra = mes % 2 === 1 ? 'saldo-zebra' : '';
                 const input = `<input type="number" min="0" value="${qtdeVendida[mes] || 0}" 
-                    onchange="qtdeVendida[${mes}]=parseInt(this.value)||0; gerarTabela();" style="width: 120px;">`;
+                    onchange="qtdeVendida[${mes}]=parseInt(this.value)||0; gerarTabela();" style="width: 108px; margin: 0 auto; display: block;">`;
 
                 const qtde = qtdeVendida[mes] || 0;
                 const receber = receberPorMes[mes] || 0;
@@ -411,16 +464,17 @@
                 const saldo = receber - pagar;
                 saldoAcum += saldo;
                 if (saldoAcum < saldoMin) saldoMin = saldoAcum;
+                saldoAcumuladoArray.push(saldoAcum);
 
                 tbody += `<tr class="${zebra}">
-                    <td class="wide-col">${mes+1}</td>
-                    <td class="wide-col editable-cell">${input}</td>
-                    <td class="wide-col">${receber > 0 ? "R$ " + receber.toFixed(2) : "-"}</td>
-                    <td class="wide-col ${pagar > 0 ? 'saldo-neg' : ''}">${pagar > 0 ? '-R$ ' + pagar.toFixed(2) : '-'}</td>
-                    <td class="wide-col ${saldo < 0 ? 'saldo-neg' : (saldo > 0 ? 'saldo-pos' : '')}">
+                    <td class="wide-col center">${mes+1}</td>
+                    <td class="wide-col editable-cell center">${input}</td>
+                    <td class="wide-col" style="text-align: right;">${receber > 0 ? "R$ " + receber.toFixed(2) : "-"}</td>
+                    <td class="wide-col ${pagar > 0 ? 'saldo-neg' : ''}" style="text-align: right;">${pagar > 0 ? '-R$ ' + pagar.toFixed(2) : '-'}</td>
+                    <td class="wide-col ${saldo < 0 ? 'saldo-neg' : (saldo > 0 ? 'saldo-pos' : '')}" style="text-align: right;">
                         ${saldo !== 0 ? (saldo > 0 ? 'R$ ' : '-R$ ') + Math.abs(saldo).toFixed(2) : "0,00"}
                     </td>
-                    <td class="wide-col ${saldoAcum < 0 ? 'saldo-neg' : (saldoAcum > 0 ? 'saldo-pos' : '')}">
+                    <td class="wide-col ${saldoAcum < 0 ? 'saldo-neg' : (saldoAcum > 0 ? 'saldo-pos' : '')}" style="text-align: right;">
                         ${saldoAcum !== 0 ? (saldoAcum > 0 ? 'R$ ' : '-R$ ') + Math.abs(saldoAcum).toFixed(2) : "0,00"}
                     </td>
                 </tr>`;
@@ -435,7 +489,45 @@
             document.getElementById('valorEstoque').innerHTML = `R$ ${valorEstoque.toLocaleString('pt-BR', {minimumFractionDigits:2})}`;
             document.getElementById('capitalTotal').innerHTML = `R$ ${capitalTotal.toLocaleString('pt-BR', {minimumFractionDigits:2})}`;
 
+            gerarGrafico();
             gerarInsights({capitalGiro, valorEstoque, capitalTotal, numMeses, saldoMin});
+        }
+
+        function gerarGrafico() {
+            const ctx = document.getElementById('saldoChart').getContext('2d');
+            if (saldoChart) saldoChart.destroy();
+            saldoChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: saldoAcumuladoArray.map((_, i) => `M${i + 1}`),
+                    datasets: [{
+                        label: "Saldo Acumulado",
+                        data: saldoAcumuladoArray,
+                        fill: true,
+                        borderColor: "#10ac5f",
+                        backgroundColor: "rgba(16, 172, 95, 0.08)",
+                        pointBackgroundColor: "#355981",
+                        tension: 0.18,
+                        pointRadius: 4,
+                        borderWidth: 3,
+                    }]
+                },
+                options: {
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: "#355981" }
+                        },
+                        y: {
+                            grid: { color: "#d2e2f8" },
+                            ticks: { color: "#355981", callback: function(value){ return 'R$ ' + value.toLocaleString('pt-BR'); } }
+                        }
+                    }
+                }
+            });
         }
 
         function gerarInsights({capitalGiro, valorEstoque, capitalTotal, numMeses, saldoMin}) {

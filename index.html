@@ -44,33 +44,28 @@
             box-shadow: 0 2px 10px #cde8fd30;
             display: flex;
             flex-wrap: wrap;
-            gap: 18px 26px;
+            gap: 16px 18px;
             justify-content: flex-start;
             align-items: flex-end;
-        }
-        .inputs-row {
-            display: flex;
-            gap: 26px;
-            width: 100%;
-            margin-bottom: 8px;
         }
         .inputs-card label {
             display: flex;
             flex-direction: column;
             gap: 4px;
             font-weight: 500;
-            min-width: 148px;
-            max-width: 170px;
+            min-width: 138px;
+            max-width: 160px;
+            flex: 1 1 138px;
             position: relative;
-            font-size: 1.02em;
+            font-size: 1.01em;
         }
         .inputs-card input {
-            padding: 9px 8px;
+            padding: 8px 8px;
             border: 1px solid #a0aec0;
             border-radius: 7px;
             width: 100%;
             font-size: 1rem;
-            height: 38px;
+            height: 36px;
             box-sizing: border-box;
             margin-top: 3px;
             background: #fff;
@@ -195,9 +190,9 @@
         .saldo-pos { color: #237b4a; }
         .saldo-zebra { background: #f7fbff; }
         .editable-cell input {
-            width: 60px;
+            width: 120px;   /* Dobrei a largura aqui */
             font-size: 1.08em;
-            padding: 6px 3px;
+            padding: 7px 6px;
             border: 1.2px solid #7ca6c7;
             border-radius: 6px;
             text-align: center;
@@ -236,7 +231,11 @@
             .container { padding: 8px; }
             .cards-row { flex-direction: column; gap: 15px; }
             .info-box { width: 100%; min-width: 0; }
-            .inputs-row { flex-direction: column; gap: 14px;}
+            .inputs-card { flex-direction: column; gap: 10px;}
+        }
+        @media (max-width: 900px) {
+            .inputs-card { flex-direction: column; }
+            .info-box { width: 100%; }
         }
     </style>
 </head>
@@ -248,66 +247,62 @@
             Use o simulador para visualizar como prazos, vendas e estoque afetam o caixa ao longo dos meses. Preencha os campos, edite as vendas mensais e veja o impacto!
         </div>
         <div class="inputs-card">
-            <div class="inputs-row">
-                <label>
-                    Custo unitário do produto (R$)
-                    <span class="tooltip">
-                        <i class="fa-solid fa-circle-info"></i>
-                        <span class="tooltip-text">Quanto custa para adquirir ou fabricar cada unidade.</span>
-                    </span>
-                    <input type="number" id="custo" min="0" value="50" placeholder="Ex: 50,00">
-                </label>
-                <label>
-                    Valor de venda unitário (R$)
-                    <span class="tooltip">
-                        <i class="fa-solid fa-circle-info"></i>
-                        <span class="tooltip-text">Preço cobrado ao cliente em cada unidade.</span>
-                    </span>
-                    <input type="number" id="venda" min="0" value="100" placeholder="Ex: 100,00">
-                </label>
-                <label>
-                    Nº de parcelas de recebimento
-                    <span class="tooltip">
-                        <i class="fa-solid fa-circle-info"></i>
-                        <span class="tooltip-text">Em quantas parcelas o cliente paga a compra.</span>
-                    </span>
-                    <input type="number" id="parcReceb" min="1" value="4" placeholder="Ex: 4">
-                </label>
-                <label>
-                    Nº de parcelas de pagamento
-                    <span class="tooltip">
-                        <i class="fa-solid fa-circle-info"></i>
-                        <span class="tooltip-text">Em quantas parcelas você paga o fornecedor.</span>
-                    </span>
-                    <input type="number" id="parcPag" min="1" value="1" placeholder="Ex: 1">
-                </label>
-            </div>
-            <div class="inputs-row">
-                <label>
-                    Saldo inicial (R$)
-                    <span class="tooltip">
-                        <i class="fa-solid fa-circle-info"></i>
-                        <span class="tooltip-text">Quanto você tem em caixa ao iniciar a simulação.</span>
-                    </span>
-                    <input type="number" id="saldoInicial" min="-999999" value="0" placeholder="Ex: 0">
-                </label>
-                <label>
-                    Qtd. de itens em estoque inicial
-                    <span class="tooltip">
-                        <i class="fa-solid fa-circle-info"></i>
-                        <span class="tooltip-text">Quantidade disponível no início da simulação.</span>
-                    </span>
-                    <input type="number" id="estoqueInicial" min="0" value="0" placeholder="Ex: 10">
-                </label>
-                <label>
-                    Nº de meses para simular
-                    <span class="tooltip">
-                        <i class="fa-solid fa-circle-info"></i>
-                        <span class="tooltip-text">Período total da análise em meses.</span>
-                    </span>
-                    <input type="number" id="numMeses" min="6" max="24" value="12" placeholder="Ex: 12">
-                </label>
-            </div>
+            <label>
+                Custo unitário do produto (R$)
+                <span class="tooltip">
+                    <i class="fa-solid fa-circle-info"></i>
+                    <span class="tooltip-text">Quanto custa para adquirir ou fabricar cada unidade.</span>
+                </span>
+                <input type="number" id="custo" min="0" value="50" placeholder="Ex: 50,00">
+            </label>
+            <label>
+                Valor de venda unitário (R$)
+                <span class="tooltip">
+                    <i class="fa-solid fa-circle-info"></i>
+                    <span class="tooltip-text">Preço cobrado ao cliente em cada unidade.</span>
+                </span>
+                <input type="number" id="venda" min="0" value="100" placeholder="Ex: 100,00">
+            </label>
+            <label>
+                Nº de parcelas de recebimento
+                <span class="tooltip">
+                    <i class="fa-solid fa-circle-info"></i>
+                    <span class="tooltip-text">Em quantas parcelas o cliente paga a compra.</span>
+                </span>
+                <input type="number" id="parcReceb" min="1" value="4" placeholder="Ex: 4">
+            </label>
+            <label>
+                Nº de parcelas de pagamento
+                <span class="tooltip">
+                    <i class="fa-solid fa-circle-info"></i>
+                    <span class="tooltip-text">Em quantas parcelas você paga o fornecedor.</span>
+                </span>
+                <input type="number" id="parcPag" min="1" value="1" placeholder="Ex: 1">
+            </label>
+            <label>
+                Saldo inicial (R$)
+                <span class="tooltip">
+                    <i class="fa-solid fa-circle-info"></i>
+                    <span class="tooltip-text">Quanto você tem em caixa ao iniciar a simulação.</span>
+                </span>
+                <input type="number" id="saldoInicial" min="-999999" value="0" placeholder="Ex: 0">
+            </label>
+            <label>
+                Qtd. de itens em estoque inicial
+                <span class="tooltip">
+                    <i class="fa-solid fa-circle-info"></i>
+                    <span class="tooltip-text">Quantidade disponível no início da simulação.</span>
+                </span>
+                <input type="number" id="estoqueInicial" min="0" value="0" placeholder="Ex: 10">
+            </label>
+            <label>
+                Nº de meses para simular
+                <span class="tooltip">
+                    <i class="fa-solid fa-circle-info"></i>
+                    <span class="tooltip-text">Período total da análise em meses.</span>
+                </span>
+                <input type="number" id="numMeses" min="6" max="24" value="12" placeholder="Ex: 12">
+            </label>
         </div>
         <div class="cards-row">
             <div class="info-box">
@@ -408,7 +403,7 @@
             for (let mes = 0; mes < numMeses; mes++) {
                 const zebra = mes % 2 === 1 ? 'saldo-zebra' : '';
                 const input = `<input type="number" min="0" value="${qtdeVendida[mes] || 0}" 
-                    onchange="qtdeVendida[${mes}]=parseInt(this.value)||0; gerarTabela();">`;
+                    onchange="qtdeVendida[${mes}]=parseInt(this.value)||0; gerarTabela();" style="width: 120px;">`;
 
                 const qtde = qtdeVendida[mes] || 0;
                 const receber = receberPorMes[mes] || 0;

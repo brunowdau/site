@@ -4,10 +4,8 @@
     <meta charset="UTF-8">
     <title>Simulador de Capital de Giro | Lean Company</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Ícones Font Awesome CDN -->
+    <!-- Font Awesome para ícones -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <!-- Chart.js CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body {
             font-family: 'Segoe UI', Arial, sans-serif;
@@ -15,7 +13,7 @@
             color: #222;
         }
         .container {
-            max-width: 1320px;
+            max-width: 1100px;
             margin: 30px auto;
             background: #fff;
             border-radius: 18px;
@@ -23,16 +21,15 @@
             padding: 32px 38px;
         }
         h1 {
-            font-size: 2.4rem;
+            font-size: 2.2rem;
             margin-bottom: 10px;
             color: #015386;
             font-weight: bold;
-            letter-spacing: 0.01em;
             text-align: center;
         }
         .subtitle {
-            font-size: 1.12rem;
-            margin-bottom: 28px;
+            font-size: 1.09rem;
+            margin-bottom: 24px;
             color: #215f86;
             background: #e8f2fa;
             border-radius: 8px;
@@ -42,45 +39,53 @@
         .inputs-card {
             background: #f1f6fb;
             border-radius: 14px;
-            padding: 16px 32px 8px 32px;
-            margin-bottom: 18px;
+            padding: 18px 26px 8px 26px;
+            margin-bottom: 20px;
             box-shadow: 0 2px 10px #cde8fd30;
             display: flex;
             flex-wrap: wrap;
-            gap: 24px 30px;
+            gap: 18px 26px;
             justify-content: flex-start;
             align-items: flex-end;
+        }
+        .inputs-row {
+            display: flex;
+            gap: 26px;
+            width: 100%;
+            margin-bottom: 8px;
         }
         .inputs-card label {
             display: flex;
             flex-direction: column;
             gap: 4px;
             font-weight: 500;
-            min-width: 190px;
+            min-width: 148px;
+            max-width: 170px;
             position: relative;
+            font-size: 1.02em;
         }
         .inputs-card input {
-            padding: 10px 8px;
+            padding: 9px 8px;
             border: 1px solid #a0aec0;
             border-radius: 7px;
             width: 100%;
             font-size: 1rem;
-            height: 42px;
+            height: 38px;
             box-sizing: border-box;
             margin-top: 3px;
+            background: #fff;
         }
-        .tooltip {
+        .inputs-card .tooltip {
             position: absolute;
             right: 2px;
             top: 0;
             cursor: pointer;
             color: #3276c3;
-            font-size: 1.07em;
-            z-index: 10;
+            font-size: 1.08em;
         }
-        .tooltip .tooltip-text {
+        .inputs-card .tooltip .tooltip-text {
             visibility: hidden;
-            width: 210px;
+            width: 190px;
             background-color: #3276c3;
             color: #fff;
             text-align: left;
@@ -90,49 +95,28 @@
             z-index: 20;
             top: 24px;
             right: 2px;
-            font-size: 0.98em;
+            font-size: 0.95em;
             opacity: 0;
             transition: opacity 0.18s;
             font-weight: 400;
             pointer-events: none;
         }
-        .tooltip:hover .tooltip-text {
+        .inputs-card .tooltip:hover .tooltip-text {
             visibility: visible;
             opacity: 1;
         }
-        .btns-row {
-            display: flex;
-            gap: 16px;
-            margin: 15px 0 12px 0;
-        }
-        .btn {
-            background: #0174b7;
-            color: #fff;
-            font-weight: bold;
-            padding: 10px 22px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background 0.18s;
-            font-size: 1.09em;
-            box-shadow: 0 2px 8px #ddeafd55;
-            display: flex;
-            align-items: center;
-            gap: 7px;
-        }
-        .btn:hover { background: #003c5d; }
         .cards-row {
             display: flex;
             flex-wrap: wrap;
             gap: 22px;
-            margin-bottom: 28px;
+            margin-bottom: 32px;
             justify-content: flex-start;
             align-items: flex-end;
         }
         .info-box {
             background: #f1f6fb;
             border-radius: 10px;
-            padding: 14px 24px 12px 24px;
+            padding: 14px 20px 10px 20px;
             min-width: 270px;
             flex: 1 1 270px;
             font-size: 1.07rem;
@@ -141,35 +125,25 @@
             display: flex;
             flex-direction: column;
             align-items: flex-start;
-            height: 84px;
+            height: 80px;
             position: relative;
         }
-        .info-box .big {
-            font-size: 1.65em;
-            font-weight: bold;
-            color: #cb3535;
-            margin-top: 2px;
-        }
-        .info-box .pos { color: #11853b; }
-        .info-box .neg { color: #cb3535; }
-        .info-box .neutral { color: #015386; }
         .info-box .label {
-            font-size: 1.05em;
+            font-size: 1em;
             margin-bottom: 2px;
             color: #015386;
             font-weight: 500;
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 7px;
         }
         .info-box i {
-            margin-left: 5px;
             color: #0174b7;
-            cursor: pointer;
+            font-size: 1.1em;
         }
         .info-box .tooltip-text {
             position: absolute;
-            top: 32px;
+            top: 30px;
             left: 25px;
             z-index: 20;
             background: #3276c3;
@@ -183,75 +157,59 @@
             width: 220px;
         }
         .info-box:hover .tooltip-text { visibility: visible; opacity: 1; }
-        .alert-row {
-            margin: 10px 0 12px 0;
-            padding: 10px 18px;
-            background: #fce0e0;
-            color: #9c1f2d;
-            font-size: 1.14em;
-            border-left: 6px solid #cb3535;
-            border-radius: 7px;
-            display: none;
-            align-items: center;
-            gap: 12px;
+        .info-box .big {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #cb3535;
+            margin-top: 2px;
+        }
+        .info-box .pos { color: #11853b; }
+        .info-box .neg { color: #cb3535; }
+        .info-box .neutral { color: #015386; }
+        .info-box:last-child {
+            min-width: 310px;
         }
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 10px;
-            margin-bottom: 12px;
+            margin-top: 12px;
         }
         th, td {
             border: 1px solid #dae4f0;
             padding: 10px 8px;
             text-align: right;
-            font-size: 1.13em;
+            font-size: 1.11em;
         }
         th {
             background: #f1f6fb;
             color: #015386;
-            font-size: 1.11em;
+            font-size: 1.08em;
             text-align: center;
         }
         .wide-col {
-            width: 170px;
-            min-width: 160px;
-            max-width: 180px;
+            width: 150px;
+            min-width: 120px;
+            max-width: 170px;
         }
         .saldo-neg { color: #cb3535; }
         .saldo-pos { color: #237b4a; }
         .saldo-zebra { background: #f7fbff; }
-        .saldo-highlight {
-            background: #e0faea !important;
-            border-bottom: 3px solid #10ac5f !important;
-            position: relative;
-        }
-        .saldo-highlight:after {
-            content: '\f00c';
-            font-family: "Font Awesome 6 Free";
-            font-weight: 900;
-            color: #10ac5f;
-            position: absolute;
-            right: 8px;
-            top: 12px;
-            font-size: 1.25em;
-        }
         .editable-cell input {
-            width: 70px;
-            font-size: 1.13em;
-            padding: 8px 4px;
+            width: 60px;
+            font-size: 1.08em;
+            padding: 6px 3px;
             border: 1.2px solid #7ca6c7;
             border-radius: 6px;
             text-align: center;
-            height: 36px;
+            height: 32px;
             box-sizing: border-box;
             background: #f7faff;
         }
         .legend {
-            margin-top: 8px;
+            margin-top: 10px;
             font-size: 1em;
             display: flex;
-            gap: 24px;
+            gap: 22px;
             align-items: center;
         }
         .legend span {
@@ -264,7 +222,6 @@
         .legend .neg { background: #fce0e0; border: 1px solid #cb3535;}
         .legend .pos { background: #e0faea; border: 1px solid #10ac5f;}
         .legend .zebra { background: #f7fbff; border: 1px solid #a7c7e7;}
-        .legend .check { color: #10ac5f; font-weight: bold; margin-left: 3px;}
         .insights {
             background: #f1f6fb;
             border-radius: 10px;
@@ -275,280 +232,119 @@
             font-weight: 500;
             border-left: 5px solid #10ac5f;
         }
-        .cenarios-row {
-            display: flex;
-            flex-direction: row;
-            gap: 28px;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
-        }
-        @media (max-width: 1400px) {
+        @media (max-width: 1200px) {
             .container { padding: 8px; }
-            .cards-row, .cenarios-row { flex-direction: column; gap: 16px; }
+            .cards-row { flex-direction: column; gap: 15px; }
             .info-box { width: 100%; min-width: 0; }
-        }
-        @media (max-width: 900px) {
-            .inputs-card { flex-direction: column; gap: 14px; padding: 8px;}
-            .inputs-card label { min-width: 0; width: 100%; }
-            .info-box { width: 100%; }
+            .inputs-row { flex-direction: column; gap: 14px;}
         }
     </style>
 </head>
 <body>
-    <div class="container" id="main-container">
-
+    <div class="container">
         <h1>Simulador de Capital de Giro - Lean Company</h1>
         <div class="subtitle">
-            Entenda a necessidade de capital de giro (NCG) do seu negócio! <br>
-            Preencha os campos abaixo, edite as vendas de cada mês na tabela e visualize como prazos, vendas e estoque afetam seu fluxo de caixa.<br>
-            <b>NCG</b> é o valor que a empresa precisa investir para financiar seu ciclo operacional até receber dos clientes.<br>
+            Capital de giro (NCG) é o valor que sua empresa precisa para cobrir o ciclo entre pagar fornecedores e receber dos clientes.<br>
+            Use o simulador para visualizar como prazos, vendas e estoque afetam o caixa ao longo dos meses. Preencha os campos, edite as vendas mensais e veja o impacto!
         </div>
-
-        <div class="inputs-card" id="inputsBox">
-            <label>
-                Custo unitário do produto (R$)
-                <span class="tooltip">
-                    <i class="fa-solid fa-circle-info"></i>
-                    <span class="tooltip-text">Quanto custa para adquirir ou fabricar cada unidade do produto.</span>
-                </span>
-                <input type="number" id="custo" min="0" value="50" placeholder="Ex: 50,00">
-            </label>
-            <label>
-                Valor de venda unitário (R$)
-                <span class="tooltip">
-                    <i class="fa-solid fa-circle-info"></i>
-                    <span class="tooltip-text">Preço de venda cobrado em cada unidade.</span>
-                </span>
-                <input type="number" id="venda" min="0" value="100" placeholder="Ex: 100,00">
-            </label>
-            <label>
-                Nº de parcelas de recebimento
-                <span class="tooltip">
-                    <i class="fa-solid fa-circle-info"></i>
-                    <span class="tooltip-text">Em quantas parcelas o cliente paga a compra (ex: 4 para venda parcelada em 4x).</span>
-                </span>
-                <input type="number" id="parcReceb" min="1" value="4" placeholder="Ex: 4">
-            </label>
-            <label>
-                Nº de parcelas de pagamento
-                <span class="tooltip">
-                    <i class="fa-solid fa-circle-info"></i>
-                    <span class="tooltip-text">Em quantas parcelas você paga o fornecedor.</span>
-                </span>
-                <input type="number" id="parcPag" min="1" value="1" placeholder="Ex: 1">
-            </label>
-            <label>
-                Qtd. de itens em estoque inicial
-                <span class="tooltip">
-                    <i class="fa-solid fa-circle-info"></i>
-                    <span class="tooltip-text">Quantidade disponível no início da simulação.</span>
-                </span>
-                <input type="number" id="estoqueInicial" min="0" value="0" placeholder="Ex: 10">
-            </label>
-            <label>
-                Nº de meses para simular
-                <span class="tooltip">
-                    <i class="fa-solid fa-circle-info"></i>
-                    <span class="tooltip-text">Período total da análise em meses.</span>
-                </span>
-                <input type="number" id="numMeses" min="6" max="24" value="12" placeholder="Ex: 12">
-            </label>
-            <label>
-                Saldo inicial (R$)
-                <span class="tooltip">
-                    <i class="fa-solid fa-circle-info"></i>
-                    <span class="tooltip-text">Quanto você já tem em caixa no início da simulação.</span>
-                </span>
-                <input type="number" id="saldoInicial" min="-999999" value="0" placeholder="Ex: 0">
-            </label>
+        <div class="inputs-card">
+            <div class="inputs-row">
+                <label>
+                    Custo unitário do produto (R$)
+                    <span class="tooltip">
+                        <i class="fa-solid fa-circle-info"></i>
+                        <span class="tooltip-text">Quanto custa para adquirir ou fabricar cada unidade.</span>
+                    </span>
+                    <input type="number" id="custo" min="0" value="50" placeholder="Ex: 50,00">
+                </label>
+                <label>
+                    Valor de venda unitário (R$)
+                    <span class="tooltip">
+                        <i class="fa-solid fa-circle-info"></i>
+                        <span class="tooltip-text">Preço cobrado ao cliente em cada unidade.</span>
+                    </span>
+                    <input type="number" id="venda" min="0" value="100" placeholder="Ex: 100,00">
+                </label>
+                <label>
+                    Nº de parcelas de recebimento
+                    <span class="tooltip">
+                        <i class="fa-solid fa-circle-info"></i>
+                        <span class="tooltip-text">Em quantas parcelas o cliente paga a compra.</span>
+                    </span>
+                    <input type="number" id="parcReceb" min="1" value="4" placeholder="Ex: 4">
+                </label>
+                <label>
+                    Nº de parcelas de pagamento
+                    <span class="tooltip">
+                        <i class="fa-solid fa-circle-info"></i>
+                        <span class="tooltip-text">Em quantas parcelas você paga o fornecedor.</span>
+                    </span>
+                    <input type="number" id="parcPag" min="1" value="1" placeholder="Ex: 1">
+                </label>
+            </div>
+            <div class="inputs-row">
+                <label>
+                    Saldo inicial (R$)
+                    <span class="tooltip">
+                        <i class="fa-solid fa-circle-info"></i>
+                        <span class="tooltip-text">Quanto você tem em caixa ao iniciar a simulação.</span>
+                    </span>
+                    <input type="number" id="saldoInicial" min="-999999" value="0" placeholder="Ex: 0">
+                </label>
+                <label>
+                    Qtd. de itens em estoque inicial
+                    <span class="tooltip">
+                        <i class="fa-solid fa-circle-info"></i>
+                        <span class="tooltip-text">Quantidade disponível no início da simulação.</span>
+                    </span>
+                    <input type="number" id="estoqueInicial" min="0" value="0" placeholder="Ex: 10">
+                </label>
+                <label>
+                    Nº de meses para simular
+                    <span class="tooltip">
+                        <i class="fa-solid fa-circle-info"></i>
+                        <span class="tooltip-text">Período total da análise em meses.</span>
+                    </span>
+                    <input type="number" id="numMeses" min="6" max="24" value="12" placeholder="Ex: 12">
+                </label>
+            </div>
         </div>
-
-        <div class="btns-row">
-            <button class="btn" onclick="exportarExcel()"><i class="fa-solid fa-file-excel"></i>Exportar para Excel</button>
-            <button class="btn" onclick="carregarExemplo()"><i class="fa-solid fa-lightbulb"></i>Carregar exemplo</button>
-            <button class="btn" onclick="adicionarCenario()"><i class="fa-solid fa-plus"></i>Novo cenário</button>
-        </div>
-
-        <div class="cards-row" id="cardsRow">
+        <div class="cards-row">
             <div class="info-box">
-                <span class="label">NCG da Operação
-                    <i class="fa-solid fa-circle-info"></i>
-                    <span class="tooltip-text">Necessidade de capital de giro, desconsiderando estoque inicial.</span>
+                <span class="label">
+                    <i class="fa-solid fa-calculator"></i>
+                    NCG da Operação
+                    <span class="tooltip">
+                        <i class="fa-solid fa-circle-info"></i>
+                        <span class="tooltip-text">Necessidade de capital de giro sem considerar estoque inicial.</span>
+                    </span>
                 </span>
                 <span class="big neg" id="capitalGiro"></span>
             </div>
             <div class="info-box">
-                <span class="label">Custo inicial de estoque
-                    <i class="fa-solid fa-circle-info"></i>
-                    <span class="tooltip-text">Valor investido no estoque inicial (quantidade × custo unitário).</span>
+                <span class="label">
+                    <i class="fa-solid fa-box"></i>
+                    Custo inicial de estoque
+                    <span class="tooltip">
+                        <i class="fa-solid fa-circle-info"></i>
+                        <span class="tooltip-text">Valor investido no estoque inicial (qtde × custo unitário).</span>
+                    </span>
                 </span>
                 <span class="big neg" id="valorEstoque"></span>
             </div>
             <div class="info-box">
-                <span class="label">NCG - (Operação + Estoque)
-                    <i class="fa-solid fa-circle-info"></i>
-                    <span class="tooltip-text">Necessidade total de capital de giro (operação + estoque inicial).</span>
+                <span class="label">
+                    <i class="fa-solid fa-wallet"></i>
+                    NCG - (Operação + Estoque)
+                    <span class="tooltip">
+                        <i class="fa-solid fa-circle-info"></i>
+                        <span class="tooltip-text">Necessidade total de capital de giro (operação + estoque inicial).</span>
+                    </span>
                 </span>
                 <span class="big neg" id="capitalTotal"></span>
             </div>
         </div>
-
-        <div class="alert-row" id="alertRow"></div>
-
-        <div class="cenarios-row" id="cenariosRow">
-            <!-- Simulação principal e cenários são inseridos via JS -->
-        </div>
-        <div class="legend">
-            <span class="neg"></span>Saldo negativo
-            <span class="pos"></span>Saldo positivo
-            <span class="zebra"></span>Linha alternada
-            <span class="check"><i class="fa-solid fa-check"></i></span>Virada para saldo positivo
-        </div>
-        <div class="insights" id="insights"></div>
-    </div>
-
-    <script>
-    // VARIÁVEIS GLOBAIS E CONTROLE DE CENÁRIOS
-    let qtdeVendida = [];
-    let numMeses = 12;
-    let cenarios = [];
-    let cenarioAtivo = 0; // 0 = principal
-
-    // --------- COMPONENTES DIDÁTICOS E EXEMPLOS ---------
-    function carregarExemplo() {
-        document.getElementById('custo').value = 40;
-        document.getElementById('venda').value = 100;
-        document.getElementById('parcReceb').value = 3;
-        document.getElementById('parcPag').value = 2;
-        document.getElementById('saldoInicial').value = 0;
-        document.getElementById('estoqueInicial').value = 10;
-        document.getElementById('numMeses').value = 12;
-        qtdeVendida = [5, 6, 7, 6, 8, 5, 4, 8, 10, 7, 8, 9];
-        cenarios = [];
-        cenarioAtivo = 0;
-        gerarTabela();
-        renderCenarios();
-        document.getElementById('insights').scrollIntoView({behavior:"smooth"});
-    }
-
-    // --------- PARÂMETROS E TABELA PRINCIPAL ---------
-    function getParams() {
-        return {
-            custo: parseFloat(document.getElementById('custo').value) || 0,
-            venda: parseFloat(document.getElementById('venda').value) || 0,
-            parcReceb: parseInt(document.getElementById('parcReceb').value) || 1,
-            parcPag: parseInt(document.getElementById('parcPag').value) || 1,
-            saldoInicial: parseFloat(document.getElementById('saldoInicial').value) || 0,
-            estoqueInicial: parseInt(document.getElementById('estoqueInicial').value) || 0,
-            numMeses: parseInt(document.getElementById('numMeses').value) || 12
-        };
-    }
-
-    function gerarTabela(cenario = null, renderCenariosFlag=true) {
-        // Se vier cenario, sobrescreve parâmetros
-        let params = cenario ? {...cenario} : getParams();
-        let vendas = cenario ? [...cenario.qtdeVendida] : [...qtdeVendida];
-        let meses = params.numMeses;
-
-        // Ajusta array de vendas conforme meses
-        while (vendas.length < meses) vendas.push(0);
-        while (vendas.length > meses) vendas.pop();
-
-        let receberPorMes = Array(meses + params.parcReceb).fill(0);
-        let pagarPorMes = Array(meses + params.parcPag).fill(0);
-
-        for (let mes = 0; mes < meses; mes++) {
-            const qtd = vendas[mes] || 0;
-            const valorVenda = qtd * params.venda;
-            const valorCusto = qtd * params.custo;
-            for (let p = 0; p < params.parcReceb; p++) {
-                receberPorMes[mes + p] += valorVenda / params.parcReceb;
-            }
-            for (let p = 0; p < params.parcPag; p++) {
-                pagarPorMes[mes + p] += valorCusto / params.parcPag;
-            }
-        }
-
-        let saldoAcum = params.saldoInicial;
-        let saldoMin = saldoAcum;
-        let tbody = "";
-        let viradaMes = null;
-
-        for (let mes = 0; mes < meses; mes++) {
-            const input = cenario === null ? `<input type="number" min="0" value="${vendas[mes] || 0}" onchange="qtdeVendida[${mes}]=parseInt(this.value)||0; gerarTabela()"; renderCenarios();">` : (vendas[mes] || 0);
-
-            const qtde = vendas[mes] || 0;
-            const receber = receberPorMes[mes] || 0;
-            const pagar = pagarPorMes[mes] || 0;
-            const saldo = receber - pagar;
-            let saldoAntes = saldoAcum;
-            saldoAcum += saldo;
-
-            if (saldoAcum < saldoMin) saldoMin = saldoAcum;
-
-            // Destaque de mês de virada (primeira vez saldoAcum >=0)
-            let saldoAcumClass = "";
-            if (saldoAcum >= 0 && saldoAntes < 0 && !viradaMes) {
-                saldoAcumClass = "saldo-highlight";
-                viradaMes = mes+1;
-            }
-            else if (mes % 2 === 1) {
-                saldoAcumClass = "saldo-zebra";
-            }
-
-            tbody += `<tr>
-                <td class="wide-col">${mes+1}</td>
-                <td class="wide-col editable-cell">${input}</td>
-                <td class="wide-col">${receber > 0 ? "R$ " + receber.toFixed(2) : "-"}</td>
-                <td class="wide-col ${pagar > 0 ? 'saldo-neg' : ''}">${pagar > 0 ? '-R$ ' + pagar.toFixed(2) : '-'}</td>
-                <td class="wide-col ${saldo < 0 ? 'saldo-neg' : (saldo > 0 ? 'saldo-pos' : '')}">${saldo !== 0 ? (saldo > 0 ? 'R$ ' : '-R$ ') + Math.abs(saldo).toFixed(2) : "0,00"}</td>
-                <td class="wide-col ${saldoAcumClass} ${saldoAcum < 0 ? 'saldo-neg' : (saldoAcum > 0 ? 'saldo-pos' : '')}">
-                    ${saldoAcum !== 0 ? (saldoAcum > 0 ? 'R$ ' : '-R$ ') + Math.abs(saldoAcum).toFixed(2) : "0,00"}
-                </td>
-            </tr>`;
-        }
-
-        // Preenche tabela na página principal ou retorna (para cenários)
-        if (cenario === null) {
-            document.getElementById("cenariosRow").innerHTML = "";
-            document.getElementById("cenariosRow").appendChild(montaTabela(tbody, meses, viradaMes, false, true));
-        } else {
-            return {tbody, meses, viradaMes, vendas, params};
-        }
-
-        // Cálculo dos cards
-        let capitalGiro = saldoMin < 0 ? Math.abs(saldoMin) : 0;
-        let valorEstoque = params.estoqueInicial * params.custo;
-        let capitalTotal = capitalGiro + valorEstoque;
-        document.getElementById('capitalGiro').innerHTML = `R$ ${capitalGiro.toLocaleString('pt-BR', {minimumFractionDigits:2})}`;
-        document.getElementById('valorEstoque').innerHTML = `R$ ${valorEstoque.toLocaleString('pt-BR', {minimumFractionDigits:2})}`;
-        document.getElementById('capitalTotal').innerHTML = `R$ ${capitalTotal.toLocaleString('pt-BR', {minimumFractionDigits:2})}`;
-
-        // Alerta NCG
-        let alertEl = document.getElementById('alertRow');
-        if (capitalGiro > valorEstoque * 1.5 || capitalGiro > 2 * (params.custo || 1)) {
-            alertEl.style.display = "flex";
-            alertEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i>
-            <b>Atenção:</b> Sua necessidade de capital de giro está alta em relação ao estoque e aos custos. Considere rever prazos de recebimento, negociar com fornecedores ou aumentar saldo inicial.`;
-        } else {
-            alertEl.style.display = "none";
-        }
-
-        // Insights automáticos
-        gerarInsights({capitalGiro, valorEstoque, capitalTotal, meses, viradaMes});
-
-        // Render gráfico
-        setTimeout(() => { desenharGrafico(receberPorMes, pagarPorMes, params, meses); }, 50);
-
-        // Render cenários se solicitado
-        if(renderCenariosFlag) renderCenarios();
-    }
-
-    function montaTabela(tbody, meses, viradaMes, cenarioView, isMain) {
-        let card = document.createElement('div');
-        card.style.flex = "1 1 700px";
-        card.innerHTML = `
-        <table>
+        <table id="resultTable">
             <thead>
                 <tr>
                     <th class="wide-col">Mês</th>
@@ -559,170 +355,128 @@
                     <th class="wide-col">Saldo Acumulado (R$)</th>
                 </tr>
             </thead>
-            <tbody>${tbody}</tbody>
+            <tbody></tbody>
         </table>
-        <canvas id="graficoSaldo${isMain?'' : '-'+viradaMes}" height="50"></canvas>
-        `;
-        return card;
-    }
+        <div class="legend">
+            <span class="neg"></span>Saldo negativo
+            <span class="pos"></span>Saldo positivo
+            <span class="zebra"></span>Linha alternada
+        </div>
+        <div class="insights" id="insights"></div>
+    </div>
+    <script>
+        let qtdeVendida = [];
+        let numMeses = 12;
 
-    // --------- CENÁRIOS ---------
-    function adicionarCenario() {
-        let params = getParams();
-        let vendas = [...qtdeVendida];
-        let cenario = {...params, qtdeVendida: vendas, nome: `Cenário ${cenarios.length+1}`};
-        cenarios.push(cenario);
-        renderCenarios();
-    }
-    function renderCenarios() {
-        let row = document.getElementById('cenariosRow');
-        row.innerHTML = "";
-        // Simulação principal
-        row.appendChild(montaTabelaPrincipal());
-        // Cenários
-        for (let i = 0; i < cenarios.length; i++) {
-            let c = gerarTabela(cenarios[i], false);
-            let card = montaTabela(c.tbody, c.meses, c.viradaMes, true, false);
-            let delBtn = document.createElement("button");
-            delBtn.innerText = "Excluir";
-            delBtn.className = "btn";
-            delBtn.style.margin = "6px 0 0 0";
-            delBtn.onclick = function() {
-                cenarios.splice(i, 1);
-                renderCenarios();
+        function getParams() {
+            return {
+                custo: parseFloat(document.getElementById('custo').value) || 0,
+                venda: parseFloat(document.getElementById('venda').value) || 0,
+                parcReceb: parseInt(document.getElementById('parcReceb').value) || 1,
+                parcPag: parseInt(document.getElementById('parcPag').value) || 1,
+                saldoInicial: parseFloat(document.getElementById('saldoInicial').value) || 0,
+                estoqueInicial: parseInt(document.getElementById('estoqueInicial').value) || 0,
+                numMeses: parseInt(document.getElementById('numMeses').value) || 12
             };
-            let title = document.createElement("div");
-            title.innerHTML = `<b>${cenarios[i].nome || `Cenário ${i+1}`}</b>`;
-            title.style.margin = "4px 0 2px 0";
-            card.prepend(title);
-            card.appendChild(delBtn);
-            row.appendChild(card);
         }
-    }
-    function montaTabelaPrincipal() {
-        let el = document.createElement("div");
-        el.id = "mainTableWrap";
-        return el;
-    }
 
-    // --------- GRÁFICO (Chart.js) ---------
-    function desenharGrafico(receberPorMes, pagarPorMes, params, meses) {
-        let ctx = document.querySelector("#graficoSaldo");
-        if(!ctx) return;
-        let saldoAcum = params.saldoInicial;
-        let dataSaldo = [];
-        for (let mes = 0; mes < meses; mes++) {
-            const receber = receberPorMes[mes] || 0;
-            const pagar = pagarPorMes[mes] || 0;
-            const saldo = receber - pagar;
-            saldoAcum += saldo;
-            dataSaldo.push(saldoAcum);
-        }
-        if(window.graficoLine) window.graficoLine.destroy();
-        window.graficoLine = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: Array.from({length: meses}, (_,i)=>`M${i+1}`),
-                datasets: [{
-                    label: 'Saldo Acumulado',
-                    data: dataSaldo,
-                    tension: 0.3,
-                    borderColor: '#015386',
-                    backgroundColor: 'rgba(22, 168, 92,0.13)',
-                    pointBackgroundColor: dataSaldo.map(v=>v>=0?"#10ac5f":"#cb3535"),
-                    pointRadius: 5
-                }]
-            },
-            options: {
-                plugins: { legend: { display: false } },
-                scales: {
-                    x: { grid: {display: false}},
-                    y: { beginAtZero: false }
+        function gerarTabela() {
+            const params = getParams();
+            numMeses = params.numMeses;
+            while (qtdeVendida.length < numMeses) qtdeVendida.push(0);
+            while (qtdeVendida.length > numMeses) qtdeVendida.pop();
+
+            let receberPorMes = Array(numMeses + params.parcReceb).fill(0);
+            let pagarPorMes = Array(numMeses + params.parcPag).fill(0);
+
+            for (let mes = 0; mes < numMeses; mes++) {
+                const qtd = qtdeVendida[mes] || 0;
+                const valorVenda = qtd * params.venda;
+                const valorCusto = qtd * params.custo;
+                for (let p = 0; p < params.parcReceb; p++) {
+                    receberPorMes[mes + p] += valorVenda / params.parcReceb;
+                }
+                for (let p = 0; p < params.parcPag; p++) {
+                    pagarPorMes[mes + p] += valorCusto / params.parcPag;
                 }
             }
-        });
-    }
 
-    // --------- EXPORTAÇÃO ---------
-    function exportarExcel() {
-        let params = getParams();
-        let meses = params.numMeses;
-        let vendas = [...qtdeVendida];
-        let receberPorMes = Array(meses + params.parcReceb).fill(0);
-        let pagarPorMes = Array(meses + params.parcPag).fill(0);
-        for (let mes = 0; mes < meses; mes++) {
-            const qtd = vendas[mes] || 0;
-            const valorVenda = qtd * params.venda;
-            const valorCusto = qtd * params.custo;
-            for (let p = 0; p < params.parcReceb; p++) {
-                receberPorMes[mes + p] += valorVenda / params.parcReceb;
+            let saldoAcum = params.saldoInicial;
+            let saldoMin = saldoAcum;
+            let tbody = "";
+
+            for (let mes = 0; mes < numMeses; mes++) {
+                const zebra = mes % 2 === 1 ? 'saldo-zebra' : '';
+                const input = `<input type="number" min="0" value="${qtdeVendida[mes] || 0}" 
+                    onchange="qtdeVendida[${mes}]=parseInt(this.value)||0; gerarTabela();">`;
+
+                const qtde = qtdeVendida[mes] || 0;
+                const receber = receberPorMes[mes] || 0;
+                const pagar = pagarPorMes[mes] || 0;
+                const saldo = receber - pagar;
+                saldoAcum += saldo;
+                if (saldoAcum < saldoMin) saldoMin = saldoAcum;
+
+                tbody += `<tr class="${zebra}">
+                    <td class="wide-col">${mes+1}</td>
+                    <td class="wide-col editable-cell">${input}</td>
+                    <td class="wide-col">${receber > 0 ? "R$ " + receber.toFixed(2) : "-"}</td>
+                    <td class="wide-col ${pagar > 0 ? 'saldo-neg' : ''}">${pagar > 0 ? '-R$ ' + pagar.toFixed(2) : '-'}</td>
+                    <td class="wide-col ${saldo < 0 ? 'saldo-neg' : (saldo > 0 ? 'saldo-pos' : '')}">
+                        ${saldo !== 0 ? (saldo > 0 ? 'R$ ' : '-R$ ') + Math.abs(saldo).toFixed(2) : "0,00"}
+                    </td>
+                    <td class="wide-col ${saldoAcum < 0 ? 'saldo-neg' : (saldoAcum > 0 ? 'saldo-pos' : '')}">
+                        ${saldoAcum !== 0 ? (saldoAcum > 0 ? 'R$ ' : '-R$ ') + Math.abs(saldoAcum).toFixed(2) : "0,00"}
+                    </td>
+                </tr>`;
             }
-            for (let p = 0; p < params.parcPag; p++) {
-                pagarPorMes[mes + p] += valorCusto / params.parcPag;
+            document.querySelector("#resultTable tbody").innerHTML = tbody;
+
+            let capitalGiro = saldoMin < 0 ? Math.abs(saldoMin) : 0;
+            let valorEstoque = params.estoqueInicial * params.custo;
+            let capitalTotal = capitalGiro + valorEstoque;
+
+            document.getElementById('capitalGiro').innerHTML = `R$ ${capitalGiro.toLocaleString('pt-BR', {minimumFractionDigits:2})}`;
+            document.getElementById('valorEstoque').innerHTML = `R$ ${valorEstoque.toLocaleString('pt-BR', {minimumFractionDigits:2})}`;
+            document.getElementById('capitalTotal').innerHTML = `R$ ${capitalTotal.toLocaleString('pt-BR', {minimumFractionDigits:2})}`;
+
+            gerarInsights({capitalGiro, valorEstoque, capitalTotal, numMeses, saldoMin});
+        }
+
+        function gerarInsights({capitalGiro, valorEstoque, capitalTotal, numMeses, saldoMin}) {
+            let obs = [];
+            if (capitalGiro > valorEstoque * 1.5) {
+                obs.push(`A necessidade de capital de giro (NCG) está muito acima do valor investido em estoque. Considere renegociar prazos com clientes/fornecedores ou reforçar o saldo inicial.`);
             }
+            if (capitalGiro < 1 && capitalTotal < 1) {
+                obs.push(`A operação está equilibrada: não há necessidade significativa de capital de giro.`);
+            }
+            if (capitalGiro > 0 && capitalGiro < valorEstoque) {
+                obs.push(`A NCG está sob controle, mas pode ser otimizada com prazos melhores ou mais estoque inicial.`);
+            }
+            if(obs.length === 0) obs.push("Preencha ou altere os campos para gerar insights personalizados sobre seu fluxo de caixa.");
+            document.getElementById('insights').innerHTML = obs.join("<br>");
         }
-        let saldoAcum = params.saldoInicial;
-        let csv = "Mês;Qtde Vendida;Valor Receber (R$);Valor Pagar (R$);Saldo Mês (R$);Saldo Acumulado (R$)\n";
-        for (let mes = 0; mes < meses; mes++) {
-            const qtde = vendas[mes] || 0;
-            const receber = receberPorMes[mes] || 0;
-            const pagar = pagarPorMes[mes] || 0;
-            const saldo = receber - pagar;
-            saldoAcum += saldo;
-            csv += `${mes+1};${qtde};${receber.toFixed(2)};${pagar.toFixed(2)};${saldo.toFixed(2)};${saldoAcum.toFixed(2)}\n`;
-        }
-        let a = document.createElement('a');
-        a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
-        a.download = 'simulador_ncg.csv';
-        a.click();
-    }
 
-    // --------- INSIGHTS AUTOMÁTICOS ---------
-    function gerarInsights({capitalGiro, valorEstoque, capitalTotal, meses, viradaMes}) {
-        let obs = [];
-        if (viradaMes) {
-            obs.push(`O saldo acumulado torna-se positivo no mês <b>${viradaMes}</b>.`);
-        }
-        if (capitalGiro > valorEstoque * 1.5) {
-            obs.push(`Sua necessidade de capital de giro (NCG) está muito acima do valor investido em estoque. Considere negociar melhores prazos ou repensar a política de vendas.`);
-        }
-        if (capitalGiro < 1 && capitalTotal < 1) {
-            obs.push(`A operação está equilibrada: não há necessidade significativa de capital de giro.`);
-        }
-        if (capitalGiro > 0 && capitalGiro < valorEstoque) {
-            obs.push(`A NCG está controlada, mas poderia ser otimizada com melhores prazos de recebimento ou pagamento.`);
-        }
-        if(obs.length === 0) obs.push("Preencha ou altere os campos acima para gerar insights personalizados sobre sua operação.");
-        document.getElementById('insights').innerHTML = obs.join("<br>");
-    }
+        document.querySelectorAll('.inputs-card input').forEach(inp => inp.addEventListener('input', () => {
+            if(inp.id === 'numMeses') {
+                const params = getParams();
+                while (qtdeVendida.length < params.numMeses) qtdeVendida.push(0);
+                while (qtdeVendida.length > params.numMeses) qtdeVendida.pop();
+            }
+            gerarTabela();
+        }));
 
-    // --------- REATIVIDADE ---------
-    document.querySelectorAll('.inputs-card input').forEach(inp => inp.addEventListener('input', () => {
-        // Ao mudar o número de meses, ajusta array de quantidades vendidas
-        if(inp.id === 'numMeses') {
+        function init() {
             const params = getParams();
-            while (qtdeVendida.length < params.numMeses) qtdeVendida.push(0);
-            while (qtdeVendida.length > params.numMeses) qtdeVendida.pop();
+            qtdeVendida = [];
+            for(let i=0; i<params.numMeses; i++) qtdeVendida.push(i === 0 ? 1 : (i === 1 ? 2 : 0));
+            gerarTabela();
         }
-        gerarTabela();
-        renderCenarios();
-    }));
 
-    // Inicialização
-    function init() {
-        const params = getParams();
-        qtdeVendida = [];
-        for(let i=0; i<params.numMeses; i++) qtdeVendida.push(i === 0 ? 1 : (i === 1 ? 2 : 0));
-        gerarTabela();
-        renderCenarios();
-    }
-    window.onload = init;
-    // Torna qtdeVendida global para onchange funcionar
-    window.qtdeVendida = qtdeVendida;
-    window.gerarTabela = gerarTabela;
-    window.carregarExemplo = carregarExemplo;
-    window.exportarExcel = exportarExcel;
-    window.adicionarCenario = adicionarCenario;
+        window.onload = init;
+        window.qtdeVendida = qtdeVendida;
+        window.gerarTabela = gerarTabela;
     </script>
 </body>
 </html>

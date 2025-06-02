@@ -36,11 +36,14 @@
             justify-content: center;
             align-items: center;
             margin-bottom: 18px;
+            width: 100%;
         }
         .logo img {
-            height: 76px;
-            width: auto;
-            max-width: 1100px;
+            width: 100%;
+            height: auto;
+            max-width: 100%;
+            display: block;
+            border-radius: 7px; /* opcional, só para suavizar as bordas */
         }
         h1 {
             font-size: 2.1rem;
@@ -219,7 +222,7 @@
         .saldo-zebra { background: #f3f7fb; }
         .center { text-align: center !important; }
         .editable-cell input {
-            width: 108px;   /* Mantido largo */
+            width: 108px;
             font-size: 1.08em;
             padding: 7px 8px;
             border: 1.2px solid #7ca6c7;
